@@ -1,0 +1,10 @@
+2:	Temperature Sensor
+3:	Fan Speed
+4:	ESC Receiver Input
+5:	ESC Output
+6:	Servo Output
+7:	Servo Receiver Input
+8:	LED Green
+9:	LED Red
+10:	LED Blue
+12:	Receiver Power
