@@ -11,7 +11,6 @@ class RCReceiver
 public:
     RCReceiver(uint8_t pinPower, uint8_t pinThrottleIn, uint8_t pinThrottleOut, uint8_t pinSteeringIn, uint8_t pinSteeringOut);
     void begin();
-    void loop();
     uint16_t getThrottleInPulseMicros();
     uint16_t getSteeringInPulseMicros();
     bool getReceiverPower();

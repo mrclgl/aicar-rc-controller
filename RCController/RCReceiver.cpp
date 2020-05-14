@@ -19,11 +19,6 @@ void RCReceiver::begin()
     rcReader.addChannel(pinSteeringIn);
 }
 
-void RCReceiver::loop()
-{
-
-}
-
 uint16_t RCReceiver::getThrottleInPulseMicros()
 {
     return rcReader.getFreq(pinThrottleIn);
