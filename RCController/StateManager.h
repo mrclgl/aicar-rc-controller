@@ -1,21 +1,12 @@
 #ifndef RC_CONTROLLER_STATE_MANAGER
 #define RC_CONTROLLER_STATE_MANAGER
 
+class RCReceiver;
+class RGBLed;
+class ModeOfOperation;
+
 #include <Arduino.h>
-
-#include "RCReceiver.h"
-#include "RGBLed.h"
-
-#include "ModeOfOperation.h"
-#include "StandbyMode.h"
-
-enum ModesOfOperation
-{
-    Switch = -1,
-    Standby = 0,
-    RC = 2,
-    AI = 3
-};
+#include "Types.h"
 
 class StateManager
 {
@@ -25,10 +16,11 @@ public:
     void begin();
     void loop();
     ModesOfOperation getCurrentModeOfOperation();
-    void requestModeOfOperation(uint8_t mode);
+    void requestModeOfOperation(ModesOfOperation mode);
+    void setModeOfOperation(ModesOfOperation mode, bool needsConfirm = false);
+    RGBLedColor getModeColor(ModesOfOperation mode);
 
 private:
-    void setModeOfOperation(ModesOfOperation mode);
     RCReceiver* rcReceiver;
     RGBLed* statusLed;
 

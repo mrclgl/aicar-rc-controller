@@ -1,18 +1,15 @@
 #include "StandbyMode.h"
 
-StandbyMode::StandbyMode(RCReceiver* rcReceiver, RGBLed* statusLed) : ModeOfOperation(rcReceiver, statusLed) {}
+#include "StateManager.h"
+#include "RCReceiver.h"
+#include "RGBLed.h"
+
+StandbyMode::StandbyMode(StateManager* stateManager, RCReceiver* rcReceiver, RGBLed* statusLed) : ModeOfOperation(stateManager, rcReceiver, statusLed) {}
 
 void StandbyMode::begin()
 {
-    statusLed->setRGB(false, true, false);
-}
-
-void StandbyMode::loop()
-{
-
-}
-
-void StandbyMode::end()
-{
-
+    statusLed->setRGB(RGBLedColor::Black);
+    long now = millis();
+    statusLed->setPulseR(75, 925, now + 925);
+    statusLed->setPulseG(75, 925, now + 925);
 }

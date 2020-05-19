@@ -5,6 +5,8 @@ RGBLed::RGBLed(uint8_t pinR, uint8_t pinG, uint8_t pinB)
     this->pinR = pinR;
     this->pinG = pinG;
     this->pinB = pinB;
+
+    setRGB(RGBLedColor::Black);
 }
 
 void RGBLed::begin()
@@ -46,11 +48,11 @@ void RGBLed::loop()
     }
 }
 
-void RGBLed::setRGB(bool red, bool green, bool blue)
+void RGBLed::setRGB(RGBLedColor color)
 {
-    digitalWrite(pinR, red ? HIGH : LOW);
-    digitalWrite(pinG, green ? HIGH : LOW);
-    digitalWrite(pinB, blue ? HIGH : LOW);
+    digitalWrite(pinR, (color & (1 << 0)) ? HIGH : LOW);
+    digitalWrite(pinG, (color & (1 << 1)) ? HIGH : LOW);
+    digitalWrite(pinB, (color & (1 << 2)) ? HIGH : LOW);
 
     nextToggleMillisR = -1;
     nextToggleMillisG = -1;
@@ -82,6 +84,20 @@ void RGBLed::setPulseB(uint16_t onTime, uint16_t offTime, long startMillis)
     nextToggleMillisB = startMillis > -1 ? startMillis : 0;
 
     setState(2, false);
+}
+
+void RGBLed::setRGBPulse(RGBLedColor color, uint16_t onTime, uint16_t offTime, long startMillis)
+{
+    setRGB(RGBLedColor::Black);
+
+    if (color & (1 << 0))
+        setPulseR(onTime, offTime, startMillis);
+
+    if (color & (1 << 1))
+        setPulseG(onTime, offTime, startMillis);
+
+    if (color & (1 << 2))
+        setPulseB(onTime, offTime, startMillis);
 }
 
 bool RGBLed::getState(uint8_t index)

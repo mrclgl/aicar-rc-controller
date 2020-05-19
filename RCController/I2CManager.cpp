@@ -1,5 +1,15 @@
 #include "I2CManager.h"
 
+#include <Wire.h>
+
+#include "StateManager.h"
+#include "RCReceiver.h"
+#include "TemperatureSensor.h"
+#include "AutomaticFan.h"
+
+#define DEBUG 0
+#define DISABLE_RC_THROTTLE 0
+
 #define I2C_RECEIVE_MESSAGE_BUFFER_SIZE 9 //Max expected read size
 #define I2C_SEND_MESSAGE_BUFFER_SIZE 9 //Max write message size
 
@@ -88,10 +98,12 @@ void I2CManager::handleSetModeOfOperation(uint8_t* data, uint8_t size)
 {
     if (size < 1) return;
 
+    #if DEBUG
     Serial.print("Requesting ModeOfOperation ");
     Serial.println(data[0]);
+    #endif
 
-    stateManager->requestModeOfOperation(data[0]);
+    stateManager->requestModeOfOperation(static_cast<ModesOfOperation>(data[0]));
 }
 
 void I2CManager::handleSetRCControlOutput(uint8_t* data, uint8_t size)
@@ -101,18 +113,33 @@ void I2CManager::handleSetRCControlOutput(uint8_t* data, uint8_t size)
     uint16_t throttlePulse = *static_cast<uint16_t*>(static_cast<void*>(data));
     throttlePulse = min(max(1000, throttlePulse), 2000);
 
+    #if DEBUG
     Serial.print("Set Throttle Pulse: ");
     Serial.println(throttlePulse);
-
-    //rcReceiver->setThrottleOutPulseMicros(throttlePulse);
+    #endif
 
     uint16_t steeringPulse = *static_cast<uint16_t*>(static_cast<void*>(data+2));
     steeringPulse = min(max(1000, steeringPulse), 2000);
 
+    #if DEBUG
     Serial.print("Set Steering Pulse: ");
     Serial.println(steeringPulse);
+    #endif
 
-    rcReceiver->setSteeringOutPulseMicros(steeringPulse);
+    if (stateManager->getCurrentModeOfOperation() == ModesOfOperation::AI)
+    {
+        #if !DISABLE_RC_THROTTLE
+        rcReceiver->setThrottleOutPulseMicros(throttlePulse);
+        #endif
+
+        rcReceiver->setSteeringOutPulseMicros(steeringPulse);
+    }
+    #if DEBUG
+    else
+    {
+        Serial.println("ModeOfOperation is not \"AI\" -> Ignoring control signals!");
+    }
+    #endif
 }
 
 void I2CManager::handleSetMotorFanSettings(uint8_t* data, uint8_t size)
@@ -127,6 +154,7 @@ void I2CManager::handleSetMotorFanSettings(uint8_t* data, uint8_t size)
     bool manualOverride = *(data+6) > 0 ? true : false;
     uint8_t manualSpeed = *(data+7);
 
+    #if DEBUG
     Serial.println("Set MotorFanInfo:");
 
     Serial.print("updateIntervalMillis: ");
@@ -139,6 +167,7 @@ void I2CManager::handleSetMotorFanSettings(uint8_t* data, uint8_t size)
     Serial.println(manualOverride);
     Serial.print("manualSpeed: ");
     Serial.println(manualSpeed);
+    #endif
 
     motorFan->setUpdateIntervalMillis(updateIntervalMillis);
     motorFan->setFanOffTemp(fanOffTemp);
@@ -234,5 +263,7 @@ void OnRequestI2C()
             }
             break;
         }
+
+        i2cGetCommand = 0;
     }
 }

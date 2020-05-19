@@ -1,12 +1,12 @@
 #ifndef RC_CONTROLLER_I2C_MANAGER
 #define RC_CONTROLLER_I2C_MANAGER
 
-#include <Arduino.h>
-#include <Wire.h>
+class StateManager;
+class RCReceiver;
+class TemperatureSensor;
+class AutomaticFan;
 
-#include "TemperatureSensor.h"
-#include "AutomaticFan.h"
-#include "StateManager.h"
+#include <Arduino.h>
 
 class I2CManager
 {
