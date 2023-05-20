@@ -218,6 +218,11 @@ void OnRequestI2C()
             {
                 uint8_t modeOfOperation = I2CManager::getInstance().getStateManager()->getCurrentModeOfOperation();
                 Wire.write(&modeOfOperation, 1);
+
+                #if DEBUG
+                Serial.print("Get ModeOfOperation - Returning modeOfOperation:");
+                Serial.println(modeOfOperation);
+                #endif
             }
             break;
             case 1://RCControlInput
@@ -226,9 +231,23 @@ void OnRequestI2C()
                 uint8_t* data = static_cast<uint8_t*>(static_cast<void*>(&throttlePulse));
                 Wire.write(data, 2);
 
+                #if DEBUG
+                Serial.print("Get RCControlInput - Returning throttlePulse:");
+                Serial.print(data[0]);
+                Serial.print(",");
+                Serial.println(data[1]);
+                #endif
+
                 uint16_t steeringPulse = I2CManager::getInstance().getRCReceiver()->getSteeringInPulseMicros();
                 data = static_cast<uint8_t*>(static_cast<void*>(&steeringPulse));
                 Wire.write(data, 2);
+
+                #if DEBUG
+                Serial.print(" steeringPulse:");
+                Serial.print(data[0]);
+                Serial.print(",");
+                Serial.println(data[1]);
+                #endif
             }
             break;
             case 2://MotorFanInfo
@@ -253,6 +272,21 @@ void OnRequestI2C()
 
                 uint8_t manualSpeed = I2CManager::getInstance().getMotorFan()->getManualSpeed();
                 Wire.write(&manualSpeed, 1);
+
+                #if DEBUG
+                Serial.print("Get MotorFanInfo - Returning fanSpeed:");
+                Serial.print(fanSpeed);
+                Serial.print(" updateIntervalMillis:");
+                Serial.print(updateIntervalMillis);
+                Serial.print(" fanOffTemp:");
+                Serial.print(fanOffTemp);
+                Serial.print(" fanMaxTemp:");
+                Serial.print(fanMaxTemp);
+                Serial.print(" manualOverride:");
+                Serial.print(manualOverride);
+                Serial.print(" manualSpeed:");
+                Serial.println(manualSpeed);
+                #endif
             }
             break;
             case 3://MotorTemp
@@ -260,6 +294,11 @@ void OnRequestI2C()
                 int16_t currentTempC = I2CManager::getInstance().getMotorTemp()->getCurrentTempC() * 100;
                 uint8_t* data = static_cast<uint8_t*>(static_cast<void*>(&currentTempC));
                 Wire.write(data, 2);
+
+                #if DEBUG
+                Serial.print("Get RCControlInput - Returning currentTempC:");
+                Serial.print(currentTempC);
+                #endif
             }
             break;
         }
